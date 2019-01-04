@@ -21,6 +21,7 @@ from utilities.managers import NaturalOrderingManager
 from utilities.models import ChangeLoggedModel
 from utilities.utils import serialize_object, to_meters
 from .constants import *
+from .exceptions import LoopDetected
 from .fields import ASNField, MACAddressField
 from .managers import DeviceComponentManager, InterfaceManager
 
@@ -88,7 +89,7 @@ class CableTermination(models.Model):
     class Meta:
         abstract = True
 
-    def trace(self, position=1, follow_circuits=False):
+    def trace(self, position=1, follow_circuits=False, cable_history=None):
         """
         Return a list representing a complete cable path, with each individual segment represented as a three-tuple:
             [
@@ -110,11 +111,14 @@ class CableTermination(models.Model):
                     raise Exception("Invalid position for {} ({} positions): {})".format(
                         termination, termination.positions, position
                     ))
-                peer_port = FrontPort.objects.get(
-                    rear_port=termination,
-                    rear_port_position=position,
-                )
-                return peer_port, 1
+                try:
+                    peer_port = FrontPort.objects.get(
+                        rear_port=termination,
+                        rear_port_position=position,
+                    )
+                    return peer_port, 1
+                except ObjectDoesNotExist:
+                    return None, None
 
             # Follow a circuit to its other termination
             elif isinstance(termination, CircuitTermination) and follow_circuits:
@@ -130,6 +134,13 @@ class CableTermination(models.Model):
         if not self.cable:
             return [(self, None, None)]
 
+        # Record cable history to detect loops
+        if cable_history is None:
+            cable_history = []
+        elif self.cable in cable_history:
+            raise LoopDetected()
+        cable_history.append(self.cable)
+
         far_end = self.cable.termination_b if self.cable.termination_a == self else self.cable.termination_a
         path = [(self, self.cable, far_end)]
 
@@ -137,7 +148,11 @@ class CableTermination(models.Model):
         if peer_port is None:
             return path
 
-        next_segment = peer_port.trace(position)
+        try:
+            next_segment = peer_port.trace(position, follow_circuits, cable_history)
+        except LoopDetected:
+            return path
+
         if next_segment is None:
             return path + [(peer_port, None, None)]
 
@@ -185,6 +200,13 @@ class Region(MPTTModel, ChangeLoggedModel):
             self.slug,
             self.parent.name if self.parent else None,
         )
+
+    @property
+    def site_count(self):
+        return Site.objects.filter(
+            Q(region=self) |
+            Q(region__in=self.get_descendants())
+        ).count()
 
 
 #
@@ -2629,5 +2651,7 @@ class Cable(ChangeLoggedModel):
                     path_status = CONNECTION_STATUS_PLANNED
                     break
 
-        # (A path end, B path end, connected/planned)
-        return a_path[-1][2], b_path[-1][2], path_status
+        a_endpoint = a_path[-1][2]
+        b_endpoint = b_path[-1][2]
+
+        return a_endpoint, b_endpoint, path_status

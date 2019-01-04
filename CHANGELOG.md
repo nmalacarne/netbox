@@ -1,3 +1,64 @@
+v2.5.3 (FUTURE)
+
+## Enhancements
+
+* [#1630](https://github.com/digitalocean/netbox/issues/1630) - Enable bulk editing of prefix/IP mask length
+* [#1870](https://github.com/digitalocean/netbox/issues/1870) - Add per-page toggle to object lists
+* [#1871](https://github.com/digitalocean/netbox/issues/1871) - Enable filtering sites by parent region
+* [#1983](https://github.com/digitalocean/netbox/issues/1983) - Enable regular expressions when bulk renaming device components
+* [#2693](https://github.com/digitalocean/netbox/issues/2693) - Additional cable colors
+* [#2726](https://github.com/digitalocean/netbox/issues/2726) - Include cables in global search
+
+## Bug Fixes
+
+* [#2742](https://github.com/digitalocean/netbox/issues/2742) - Preserve cluster assignment when editing a device
+
+
+---
+
+v2.5.2 (2018-12-21)
+
+## Enhancements
+
+* [#2561](https://github.com/digitalocean/netbox/issues/2561) - Add 200G and 400G interface types
+* [#2701](https://github.com/digitalocean/netbox/issues/2701) - Enable filtering of prefixes by exact prefix value
+
+## Bug Fixes
+
+* [#2673](https://github.com/digitalocean/netbox/issues/2673) - Fix exception on LLDP neighbors view for device with a circuit connected
+* [#2691](https://github.com/digitalocean/netbox/issues/2691) - Cable trace should follow circuits
+* [#2698](https://github.com/digitalocean/netbox/issues/2698) - Remove pagination restriction on bulk component creation for devices/VMs
+* [#2704](https://github.com/digitalocean/netbox/issues/2704) - Fix form select widget population on parent with null value
+* [#2707](https://github.com/digitalocean/netbox/issues/2707) - Correct permission evaluation for circuit termination cabling
+* [#2712](https://github.com/digitalocean/netbox/issues/2712) - Preserve list filtering after editing objects in bulk
+* [#2717](https://github.com/digitalocean/netbox/issues/2717) - Fix bulk deletion of tags
+* [#2721](https://github.com/digitalocean/netbox/issues/2721) - Detect loops when tracing front/rear ports
+* [#2723](https://github.com/digitalocean/netbox/issues/2723) - Correct permission evaluation when bulk deleting tags
+* [#2724](https://github.com/digitalocean/netbox/issues/2724) - Limit rear port choices to current device when editing a front port
+
+---
+
+v2.5.1 (2018-12-13)
+
+## Enhancements
+
+* [#2655](https://github.com/digitalocean/netbox/issues/2655) - Add 128GFC Fibrechannel interface type
+* [#2674](https://github.com/digitalocean/netbox/issues/2674) - Enable filtering changelog by object type under web UI
+
+## Bug Fixes
+
+* [#2662](https://github.com/digitalocean/netbox/issues/2662) - Fix ImproperlyConfigured exception when rendering API docs
+* [#2663](https://github.com/digitalocean/netbox/issues/2663) - Prevent duplicate interfaces from appearing under VLAN members view
+* [#2666](https://github.com/digitalocean/netbox/issues/2666) - Correct display of length unit in cables list
+* [#2676](https://github.com/digitalocean/netbox/issues/2676) - Fix exception when passing dictionary value to a ChoiceField
+* [#2678](https://github.com/digitalocean/netbox/issues/2678) - Fix error when viewing webhook in admin UI without write permission
+* [#2680](https://github.com/digitalocean/netbox/issues/2680) - Disallow POST requests to `/dcim/interface-connections/` API endpoint
+* [#2683](https://github.com/digitalocean/netbox/issues/2683) - Fix exception when connecting a cable to a RearPort with no corresponding FrontPort
+* [#2684](https://github.com/digitalocean/netbox/issues/2684) - Fix custom field filtering
+* [#2687](https://github.com/digitalocean/netbox/issues/2687) - Correct naming of before/after filters for changelog entries
+
+---
+
 v2.5.0 (2018-12-10)
 
 ## Notes

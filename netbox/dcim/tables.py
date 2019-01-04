@@ -29,7 +29,8 @@ SITE_REGION_LINK = """
 """
 
 COLOR_LABEL = """
-<label class="label" style="background-color: #{{ record.color }}">{{ record }}</label>
+{% load helpers %}
+<label class="label" style="color: {{ record.color|fgcolor }}; background-color: #{{ record.color }}">{{ record }}</label>
 """
 
 DEVICE_LINK = """
@@ -179,7 +180,7 @@ CABLE_TERMINATION_PARENT = """
 """
 
 CABLE_LENGTH = """
-{% if record.length %}{{ record.length }}{{ record.length_unit }}{% else %}&mdash;{% endif %}
+{% if record.length %}{{ record.length }} {{ record.get_length_unit_display }}{% else %}&mdash;{% endif %}
 """
 
 

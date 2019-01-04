@@ -58,6 +58,22 @@ class BulkRenameForm(forms.Form):
     """
     find = forms.CharField()
     replace = forms.CharField()
+    use_regex = forms.BooleanField(
+        required=False,
+        initial=True,
+        label='Use regular expressions'
+    )
+
+    def clean(self):
+
+        # Validate regular expression in "find" field
+        if self.cleaned_data['use_regex']:
+            try:
+                re.compile(self.cleaned_data['find'])
+            except re.error:
+                raise forms.ValidationError({
+                    'find': "Invalid regular expression"
+                })
 
 
 #
@@ -236,9 +252,10 @@ class SiteFilterForm(BootstrapMixin, CustomFieldFilterForm):
         required=False
     )
     region = FilterTreeNodeMultipleChoiceField(
-        queryset=Region.objects.annotate(filter_count=Count('sites')),
+        queryset=Region.objects.all(),
         to_field_name='slug',
         required=False,
+        count_attr='site_count'
     )
     tenant = FilterChoiceField(
         queryset=Tenant.objects.annotate(filter_count=Count('sites')),
@@ -1212,11 +1229,13 @@ class DeviceForm(BootstrapMixin, TenancyForm, CustomFieldForm):
 
         # Initialize helper selectors
         instance = kwargs.get('instance')
+        if 'initial' not in kwargs:
+            kwargs['initial'] = {}
         # Using hasattr() instead of "is not None" to avoid RelatedObjectDoesNotExist on required field
         if instance and hasattr(instance, 'device_type'):
-            initial = kwargs.get('initial', {}).copy()
-            initial['manufacturer'] = instance.device_type.manufacturer
-            kwargs['initial'] = initial
+            kwargs['initial']['manufacturer'] = instance.device_type.manufacturer
+        if instance and instance.cluster is not None:
+            kwargs['initial']['cluster_group'] = instance.cluster.group
 
         super().__init__(*args, **kwargs)
 
@@ -2098,6 +2117,15 @@ class FrontPortForm(BootstrapMixin, forms.ModelForm):
             'device': forms.HiddenInput(),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Limit RearPort choices to the local device
+        if hasattr(self.instance, 'device'):
+            self.fields['rear_port'].queryset = self.fields['rear_port'].queryset.filter(
+                device=self.instance.device
+            )
+
 
 # TODO: Merge with FrontPortTemplateCreateForm to remove duplicate logic
 class FrontPortCreateForm(ComponentForm):
@@ -2702,6 +2730,12 @@ class InventoryItemFilterForm(BootstrapMixin, forms.Form):
         ),
         to_field_name='slug',
         null_label='-- None --'
+    )
+    discovered = forms.NullBooleanField(
+        required=False,
+        widget=forms.Select(
+            choices=BOOLEAN_WITH_BLANK_CHOICES
+        )
     )
 
 

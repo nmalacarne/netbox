@@ -1,5 +1,10 @@
 $(document).ready(function() {
 
+    // Pagination
+    $('select#per_page').change(function() {
+        this.form.submit();
+    });
+
     // "Toggle" checkbox for object lists (PK column)
     $('input:checkbox.toggle').click(function() {
         $(this).closest('table').find('input:checkbox[name=pk]').prop('checked', $(this).prop('checked'));
@@ -100,7 +105,7 @@ $(document).ready(function() {
                     } else if (filter_field.val()) {
                         rendered_url = rendered_url.replace(match[0], filter_field.val());
                     } else if (filter_field.attr('nullable') == 'true') {
-                        rendered_url = rendered_url.replace(match[0], '0');
+                        rendered_url = rendered_url.replace(match[0], 'null');
                     }
                 }
 

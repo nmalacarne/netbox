@@ -1,3 +1,5 @@
+import re
+
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger
@@ -50,7 +52,16 @@ class BulkRenameView(GetReturnURLMixin, View):
 
             if form.is_valid():
                 for obj in selected_objects:
-                    obj.new_name = obj.name.replace(form.cleaned_data['find'], form.cleaned_data['replace'])
+                    find = form.cleaned_data['find']
+                    replace = form.cleaned_data['replace']
+                    if form.cleaned_data['use_regex']:
+                        try:
+                            obj.new_name = re.sub(find, replace, obj.name)
+                        # Catch regex group reference errors
+                        except re.error:
+                            obj.new_name = obj.name
+                    else:
+                        obj.new_name = obj.name.replace(find, replace)
 
                 if '_apply' in request.POST:
                     for obj in selected_objects:
@@ -124,7 +135,7 @@ class BulkDisconnectView(GetReturnURLMixin, View):
 #
 
 class RegionListView(ObjectListView):
-    queryset = Region.objects.annotate(site_count=Count('sites'))
+    queryset = Region.objects.all()
     filter = filters.RegionFilter
     filter_form = forms.RegionFilterForm
     table = tables.RegionTable
@@ -1530,6 +1541,7 @@ class DeviceBulkAddConsolePortView(PermissionRequiredMixin, BulkComponentCreateV
     form = forms.DeviceBulkAddComponentForm
     model = ConsolePort
     model_form = forms.ConsolePortForm
+    filter = filters.DeviceFilter
     table = tables.DeviceTable
     default_return_url = 'dcim:device_list'
 
@@ -1541,6 +1553,7 @@ class DeviceBulkAddConsoleServerPortView(PermissionRequiredMixin, BulkComponentC
     form = forms.DeviceBulkAddComponentForm
     model = ConsoleServerPort
     model_form = forms.ConsoleServerPortForm
+    filter = filters.DeviceFilter
     table = tables.DeviceTable
     default_return_url = 'dcim:device_list'
 
@@ -1552,6 +1565,7 @@ class DeviceBulkAddPowerPortView(PermissionRequiredMixin, BulkComponentCreateVie
     form = forms.DeviceBulkAddComponentForm
     model = PowerPort
     model_form = forms.PowerPortForm
+    filter = filters.DeviceFilter
     table = tables.DeviceTable
     default_return_url = 'dcim:device_list'
 
@@ -1563,6 +1577,7 @@ class DeviceBulkAddPowerOutletView(PermissionRequiredMixin, BulkComponentCreateV
     form = forms.DeviceBulkAddComponentForm
     model = PowerOutlet
     model_form = forms.PowerOutletForm
+    filter = filters.DeviceFilter
     table = tables.DeviceTable
     default_return_url = 'dcim:device_list'
 
@@ -1574,6 +1589,7 @@ class DeviceBulkAddInterfaceView(PermissionRequiredMixin, BulkComponentCreateVie
     form = forms.DeviceBulkAddInterfaceForm
     model = Interface
     model_form = forms.InterfaceForm
+    filter = filters.DeviceFilter
     table = tables.DeviceTable
     default_return_url = 'dcim:device_list'
 
@@ -1585,6 +1601,7 @@ class DeviceBulkAddDeviceBayView(PermissionRequiredMixin, BulkComponentCreateVie
     form = forms.DeviceBulkAddComponentForm
     model = DeviceBay
     model_form = forms.DeviceBayForm
+    filter = filters.DeviceFilter
     table = tables.DeviceTable
     default_return_url = 'dcim:device_list'
 
