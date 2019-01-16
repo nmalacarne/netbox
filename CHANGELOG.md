@@ -1,4 +1,20 @@
-v2.5.3 (FUTURE)
+v2.5.4 (FUTURE)
+
+## Enhancements
+
+* [#2516](https://github.com/digitalocean/netbox/issues/2516) - Implemented Select2 for all Model backed selection fields
+* [#2590](https://github.com/digitalocean/netbox/issues/2590) - Implemented the color picker with Select2 to show colors in the background
+* [#2735](https://github.com/digitalocean/netbox/issues/2735) - Implemented Select2 for all list filter form select elements
+* [#2753](https://github.com/digitalocean/netbox/issues/2753) - Implemented Select2 to replace most all instances of select fields in forms
+
+## Bug Fixes
+
+* [#2779](https://github.com/digitalocean/netbox/issues/2779) - Include "none" option when filter IP addresses by role
+* [#2783](https://github.com/digitalocean/netbox/issues/2783) - Fix AttributeError exception when attempting to delete region(s)
+
+---
+
+v2.5.3 (2019-01-11)
 
 ## Enhancements
 
@@ -6,12 +22,16 @@ v2.5.3 (FUTURE)
 * [#1870](https://github.com/digitalocean/netbox/issues/1870) - Add per-page toggle to object lists
 * [#1871](https://github.com/digitalocean/netbox/issues/1871) - Enable filtering sites by parent region
 * [#1983](https://github.com/digitalocean/netbox/issues/1983) - Enable regular expressions when bulk renaming device components
+* [#2682](https://github.com/digitalocean/netbox/issues/2682) - Add DAC and AOC cable types
 * [#2693](https://github.com/digitalocean/netbox/issues/2693) - Additional cable colors
 * [#2726](https://github.com/digitalocean/netbox/issues/2726) - Include cables in global search
 
 ## Bug Fixes
 
 * [#2742](https://github.com/digitalocean/netbox/issues/2742) - Preserve cluster assignment when editing a device
+* [#2757](https://github.com/digitalocean/netbox/issues/2757) - Always treat first/last IPs within a /31 or /127 as usable
+* [#2762](https://github.com/digitalocean/netbox/issues/2762) - Add missing DCIM field values to API `_choices` endpoint
+* [#2777](https://github.com/digitalocean/netbox/issues/2777) - Fix cable validation to handle duplicate connections on import
 
 
 ---
