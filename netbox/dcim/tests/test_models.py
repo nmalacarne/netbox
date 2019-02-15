@@ -1,6 +1,5 @@
 from django.test import TestCase
 
-from dcim.constants import *
 from dcim.models import *
 
 
@@ -150,6 +149,29 @@ class RackTestCase(TestCase):
             face=None,
         )
         self.assertTrue(pdu)
+
+
+class RackReservationTestCase(TestCase):
+
+    def setUp(self):
+        self.site1 = Site.objects.create(
+            name='TestSite1',
+            slug='test-site-1'
+        )
+
+        self.rack = Rack.objects.create(
+            name='TestRack1',
+            facility_id='A101',
+            site=self.site1,
+            u_height=42
+        )
+
+    def test_string_representation(self):
+        reservation = RackReservation(
+            rack_id=self.rack.id
+        )
+
+        self.assertNumQueries(0, lambda: reservation.__str__())
 
 
 class CableTestCase(TestCase):

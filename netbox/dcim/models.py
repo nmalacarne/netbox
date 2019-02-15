@@ -1,3 +1,4 @@
+import textwrap
 from collections import OrderedDict
 from itertools import count, groupby
 
@@ -789,7 +790,7 @@ class RackReservation(ChangeLoggedModel):
         ordering = ['created']
 
     def __str__(self):
-        return "Reservation for rack {}".format(self.rack)
+        return textwrap.shorten(self.description, 30)
 
     def clean(self):
 
